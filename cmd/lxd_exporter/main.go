@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+
 	"log"
 	"net/http"
 	"os"
@@ -16,8 +16,8 @@ import (
 var (
 	version = "staging-UNVERSIONED"
 
-	port = kingpin.Flag(
-		"port", "Provide the port to listen on").Default("9472").Int16()
+	listenAddress = kingpin.Flag("web.listen-address", "Address to listen on for web interface and telemetry.").Default("127.0.0.1:8000").String()
+
 )
 
 func main() {
@@ -35,7 +35,5 @@ func main() {
 	prometheus.MustRegister(metrics.NewCollector(logger, server))
 	http.Handle("/metrics", promhttp.Handler())
 
-	serveAddress := fmt.Sprintf(":%d", *port)
-	log.Print("Server listening on ", serveAddress)
-	log.Fatal(http.ListenAndServe(serveAddress, nil))
+	log.Fatal(http.ListenAndServe(*listenAddress, nil))
 }
